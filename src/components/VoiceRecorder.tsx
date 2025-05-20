@@ -9,6 +9,45 @@ interface VoiceRecorderProps {
   onStop: (transcript: string | null) => void;
 }
 
+// Define the SpeechRecognition interfaces
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+      isFinal: boolean;
+      length: number;
+    };
+    length: number;
+  };
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  onstart: (event: Event) => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: (event: Event) => void;
+}
+
+// Declare the SpeechRecognition constructor
+declare global {
+  interface Window {
+    SpeechRecognition?: new () => SpeechRecognition;
+    webkitSpeechRecognition?: new () => SpeechRecognition;
+  }
+}
+
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onStop }) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -18,9 +57,9 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onStop }) => {
     let recognition: SpeechRecognition | null = null;
     
     // Check if browser supports speech recognition
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
+    if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+      const SpeechRecognitionConstructor = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognitionConstructor();
       
       recognition.continuous = true;
       recognition.interimResults = true;
@@ -33,7 +72,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onStop }) => {
         });
       };
       
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
         let interimTranscript = '';
         let finalTranscript = '';
         
@@ -97,7 +136,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onStop }) => {
 
   const handleStopRecording = () => {
     if (transcript.trim()) {
-      const newNote = addNote(transcript, true);
+      addNote(transcript);
       toast({
         title: "Voice note saved",
         description: "Your voice note has been transcribed and saved."

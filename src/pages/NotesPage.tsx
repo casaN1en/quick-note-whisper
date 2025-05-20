@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, FileExport, X } from "lucide-react";
+import { Plus, FileText, X } from "lucide-react";
 import { useNotes } from "@/context/NotesContext";
 import NoteItem from "@/components/NoteItem";
 import NoteEditor from "@/components/NoteEditor";
@@ -38,7 +38,7 @@ const NotesPage = () => {
             onClick={exportNotes}
             title="Export notes via email"
           >
-            <FileExport className="h-5 w-5" />
+            <FileText className="h-5 w-5" />
           </Button>
           <Button
             variant="outline" 
