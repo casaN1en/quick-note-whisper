@@ -1,18 +1,14 @@
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, Plus, X } from "lucide-react";
+import { Plus, FileExport, X } from "lucide-react";
 import { useNotes } from "@/context/NotesContext";
 import NoteItem from "@/components/NoteItem";
 import NoteEditor from "@/components/NoteEditor";
-import VoiceRecorder from "@/components/VoiceRecorder";
-import { toast } from "@/components/ui/use-toast";
-import { isMobile } from "@/lib/utils";
 
 const NotesPage = () => {
-  const { notes } = useNotes();
+  const { notes, exportNotes } = useNotes();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
 
   const handleNewNote = () => {
@@ -30,36 +26,19 @@ const NotesPage = () => {
     setEditingNoteId(null);
   };
 
-  const startRecording = () => {
-    if (isRecording) return;
-    
-    if (isMobile()) {
-      // On mobile, we'll use the device's native speech recognition
-      toast({
-        title: "Voice Recording",
-        description: "Your device's native speech input will open."
-      });
-    }
-    
-    setIsRecording(true);
-  };
-
-  const stopRecording = () => {
-    setIsRecording(false);
-  };
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b p-4 flex justify-between items-center bg-white shadow-sm">
-        <h1 className="text-xl font-semibold text-note-text">My Notes</h1>
+        <h1 className="text-xl font-semibold text-note-text">Simple Notes</h1>
         <div className="flex gap-2">
           <Button
-            variant="outline"
+            variant="outline" 
             size="icon"
-            className={`rounded-full ${isRecording ? "bg-red-100 text-red-500 animate-pulse-recording" : ""}`}
-            onClick={isRecording ? stopRecording : startRecording}
+            className="rounded-full"
+            onClick={exportNotes}
+            title="Export notes via email"
           >
-            <Mic className={`h-5 w-5 ${isRecording ? "text-red-500" : ""}`} />
+            <FileExport className="h-5 w-5" />
           </Button>
           <Button
             variant="outline" 
@@ -108,19 +87,6 @@ const NotesPage = () => {
             />
           </div>
         </div>
-      )}
-
-      {isRecording && (
-        <VoiceRecorder 
-          onStop={(transcript) => {
-            setIsRecording(false);
-            if (transcript) {
-              setEditingNoteId(null);
-              setIsEditorOpen(true);
-              console.log("Got transcript:", transcript);
-            }
-          }} 
-        />
       )}
     </div>
   );

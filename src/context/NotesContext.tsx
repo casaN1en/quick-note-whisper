@@ -1,14 +1,15 @@
 
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext } from "react";
 import { Note, createNewNote } from "@/models/Note";
 import { toast } from "@/components/ui/use-toast";
 
 interface NotesContextType {
   notes: Note[];
-  addNote: (content: string, isVoiceNote?: boolean) => void;
+  addNote: (content: string) => void;
   updateNote: (id: string, content: string) => void;
   deleteNote: (id: string) => void;
   getNote: (id: string) => Note | undefined;
+  exportNotes: () => void;
 }
 
 const NotesContext = createContext<NotesContextType | undefined>(undefined);
@@ -24,30 +25,8 @@ export const useNotes = () => {
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notes, setNotes] = useState<Note[]>([]);
 
-  useEffect(() => {
-    // Load notes from localStorage
-    const savedNotes = localStorage.getItem("notes");
-    if (savedNotes) {
-      try {
-        setNotes(JSON.parse(savedNotes));
-      } catch (error) {
-        console.error("Failed to parse notes from localStorage:", error);
-        toast({
-          title: "Error loading notes",
-          description: "There was a problem loading your saved notes.",
-          variant: "destructive",
-        });
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    // Save notes to localStorage whenever notes change
-    localStorage.setItem("notes", JSON.stringify(notes));
-  }, [notes]);
-
-  const addNote = (content: string, isVoiceNote = false) => {
-    const newNote = createNewNote(content, isVoiceNote);
+  const addNote = (content: string) => {
+    const newNote = createNewNote(content);
     setNotes((prevNotes) => [newNote, ...prevNotes]);
     return newNote;
   };
@@ -74,12 +53,43 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return notes.find((note) => note.id === id);
   };
 
+  const exportNotes = () => {
+    if (notes.length === 0) {
+      toast({
+        title: "No notes to export",
+        description: "Create some notes first before exporting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Format notes to plain text
+    const notesText = notes.map(note => {
+      const date = new Date(note.createdAt).toLocaleString();
+      return `--- Note from ${date} ---\n${note.content}\n\n`;
+    }).join('');
+    
+    // Create mailto URL with notes as body
+    const subject = encodeURIComponent('My Notes Export');
+    const body = encodeURIComponent(notesText);
+    const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+    
+    // Open email client
+    window.location.href = mailtoLink;
+    
+    toast({
+      title: "Exporting notes",
+      description: "Opening your email client to send notes."
+    });
+  };
+
   const value = {
     notes,
     addNote,
     updateNote,
     deleteNote,
     getNote,
+    exportNotes
   };
 
   return <NotesContext.Provider value={value}>{children}</NotesContext.Provider>;
