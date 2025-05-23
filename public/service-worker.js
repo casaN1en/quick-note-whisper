@@ -13,6 +13,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
+        console.log('Opened cache');
         return cache.addAll(urlsToCache);
       })
   );
@@ -26,6 +27,7 @@ self.addEventListener('activate', (event) => {
         cacheNames.filter((cacheName) => {
           return cacheName !== CACHE_NAME;
         }).map((cacheName) => {
+          console.log('Deleting outdated cache:', cacheName);
           return caches.delete(cacheName);
         })
       );
@@ -43,8 +45,10 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
         
-        // Not in cache - return the result from the network
-        return fetch(event.request)
+        // Clone the request because it's a one-time use
+        const fetchRequest = event.request.clone();
+        
+        return fetch(fetchRequest)
           .then((response) => {
             // Check if we received a valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
@@ -60,6 +64,12 @@ self.addEventListener('fetch', (event) => {
               });
               
             return response;
+          })
+          .catch(() => {
+            // Fallback for specific navigation requests when offline
+            if (event.request.mode === 'navigate') {
+              return caches.match('./index.html');
+            }
           });
       })
   );
