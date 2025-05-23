@@ -9,25 +9,34 @@ import NotesPage from "./pages/NotesPage";
 import NotFound from "./pages/NotFound";
 import { NotesProvider } from "./context/NotesContext";
 
-// Create a client with minimal configuration
-const queryClient = new QueryClient();
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <NotesProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <HashRouter>
-            <Routes>
-              <Route path="/" element={<NotesPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </HashRouter>
-        </TooltipProvider>
-      </NotesProvider>
-    </QueryClientProvider>
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <NotesProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <HashRouter>
+              <Routes>
+                <Route path="/" element={<NotesPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </HashRouter>
+          </TooltipProvider>
+        </NotesProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 };
 
