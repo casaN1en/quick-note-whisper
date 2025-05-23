@@ -3,7 +3,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.lovable.09aaf4d1905c43edb00cc706db9b260b',
-  appName: 'Voice Notes',
+  appName: 'Simple Notes',
   webDir: 'dist',
   bundledWebRuntime: false,
   server: {
