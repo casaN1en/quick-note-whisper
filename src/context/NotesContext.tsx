@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { Note, createNewNote } from "@/models/Note";
 import { toast } from "@/components/ui/use-toast";
 
@@ -22,8 +22,29 @@ export const useNotes = () => {
   return context;
 };
 
+// Local storage key
+const STORAGE_KEY = "simple-notes";
+
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notes, setNotes] = useState<Note[]>([]);
+  // Initialize state from localStorage if available
+  const [notes, setNotes] = useState<Note[]>(() => {
+    try {
+      const storedNotes = localStorage.getItem(STORAGE_KEY);
+      return storedNotes ? JSON.parse(storedNotes) : [];
+    } catch (error) {
+      console.error("Error loading notes from localStorage:", error);
+      return [];
+    }
+  });
+
+  // Save to localStorage whenever notes change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    } catch (error) {
+      console.error("Error saving notes to localStorage:", error);
+    }
+  }, [notes]);
 
   const addNote = (content: string) => {
     const newNote = createNewNote(content);
