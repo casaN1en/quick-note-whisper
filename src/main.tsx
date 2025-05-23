@@ -1,10 +1,19 @@
 
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import { registerServiceWorker } from './registerServiceWorker'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import { registerServiceWorker } from './registerServiceWorker';
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Ensure React is properly initialized
+const rootElement = document.getElementById("root");
+if (rootElement) {
+  createRoot(rootElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}
 
 // Register service worker for PWA support
 registerServiceWorker();
