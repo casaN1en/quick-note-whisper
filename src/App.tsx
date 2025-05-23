@@ -21,22 +21,20 @@ const queryClient = new QueryClient({
 
 const App: React.FC = () => {
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <NotesProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <HashRouter>
-              <Routes>
-                <Route path="/" element={<NotesPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </HashRouter>
-          </TooltipProvider>
-        </NotesProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <NotesProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <HashRouter>
+            <Routes>
+              <Route path="/" element={<NotesPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </HashRouter>
+        </TooltipProvider>
+      </NotesProvider>
+    </QueryClientProvider>
   );
 };
 
