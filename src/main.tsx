@@ -5,14 +5,20 @@ import App from './App.tsx';
 import './index.css';
 import { registerServiceWorker } from './registerServiceWorker';
 
-// Ensure React is properly initialized
+console.log('Starting React app initialization...');
+
 const rootElement = document.getElementById("root");
 if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(
+  console.log('Root element found, creating React root...');
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
     <React.StrictMode>
       <App />
     </React.StrictMode>
   );
+  console.log('React app rendered successfully');
+} else {
+  console.error('Root element not found!');
 }
 
 // Register service worker for PWA support

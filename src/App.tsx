@@ -9,15 +9,8 @@ import NotesPage from "./pages/NotesPage";
 import NotFound from "./pages/NotFound";
 import { NotesProvider } from "./context/NotesContext";
 
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+// Create a client with minimal configuration
+const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   return (
